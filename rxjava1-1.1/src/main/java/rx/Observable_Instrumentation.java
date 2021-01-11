@@ -1,12 +1,13 @@
 package rx;
 
+import com.newrelic.api.agent.weaver.MatchType;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 import com.nr.rxjava1.NROperator;
 
 import rx.Observable.Operator;
 
-@Weave(originalName="rx.Observable")
+@Weave(originalName="rx.Observable",type=MatchType.BaseClass)
 public abstract class Observable_Instrumentation<T> {
 
 	
