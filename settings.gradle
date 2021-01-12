@@ -8,7 +8,6 @@ git {
     }
 }
 rootProject.name = 'java-instrumentation-template'
-include 'rxjave1-1.0'
 include 'rxjava1-1.1'
 include 'rxjava1-1.2'
 include 'rxjava2-2.0'
