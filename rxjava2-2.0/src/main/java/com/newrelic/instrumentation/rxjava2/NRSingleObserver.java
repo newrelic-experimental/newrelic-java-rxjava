@@ -47,7 +47,7 @@ public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
 	}
 
 	@Override
-	@Trace(async=true/*,excludeFromTransactionTrace=true*/)
+	@Trace(async=true,excludeFromTransactionTrace=true)
 	public void onSuccess(T t) {
 		if(token != null) {
 			token.linkAndExpire();
@@ -57,7 +57,7 @@ public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
 	}
 
 	@Override
-	@Trace(async=true/*,excludeFromTransactionTrace=true*/)
+	@Trace(async=true,excludeFromTransactionTrace=true)
 	public void onError(Throwable e) {
 		NewRelic.noticeError(e);
 		if(token != null) {
