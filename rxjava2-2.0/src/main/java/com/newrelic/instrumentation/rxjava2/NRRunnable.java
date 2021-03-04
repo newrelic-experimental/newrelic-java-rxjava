@@ -1,6 +1,7 @@
 package com.newrelic.instrumentation.rxjava2;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 
@@ -23,6 +24,7 @@ public class NRRunnable implements Runnable {
 	@Override
 	@Trace(async=true)
 	public void run() {
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","WrappedRunable", delegate != null ? delegate.getClass().getSimpleName() : "NullRunnable");
 		if(token != null) {
 			token.linkAndExpire();
 			token = null;
