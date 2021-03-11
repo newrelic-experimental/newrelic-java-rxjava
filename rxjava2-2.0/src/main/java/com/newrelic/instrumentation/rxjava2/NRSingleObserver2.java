@@ -14,14 +14,16 @@ public class NRSingleObserver2<T> implements SingleObserver<T> {
 	private Segment segment = null;
 	private String name = null;
 	public boolean ignore = false;
+	private long start;
 
 	private static boolean isTransformed = false;
 
 	public NRSingleObserver2(SingleObserver<T> downstream, String n) {
 		this.downstream = downstream;
 		name = n;
-		if(!ignore)
-			startSegment();
+		start = System.currentTimeMillis();
+//		if(!ignore)
+//			startSegment();
 		if(!isTransformed) {
 			isTransformed = true;
 			AgentBridge.instrumentation.retransformUninstrumentedClass(getClass());
@@ -40,6 +42,7 @@ public class NRSingleObserver2<T> implements SingleObserver<T> {
 			segment.end();
 			segment = null;
 		}
+		NewRelic.recordResponseTimeMetric("Single-"+name, System.currentTimeMillis()-start);
 		downstream.onError(e);
 	}
 
@@ -49,6 +52,7 @@ public class NRSingleObserver2<T> implements SingleObserver<T> {
 			segment.end();
 			segment = null;
 		}
+		NewRelic.recordResponseTimeMetric("Single-"+name, System.currentTimeMillis()-start);
 		downstream.onSuccess(value);
 	}
 	

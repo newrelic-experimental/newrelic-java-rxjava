@@ -18,6 +18,7 @@ import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
+import io.reactivex.NRSingleWrapper;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Single;
@@ -28,7 +29,6 @@ import io.reactivex.internal.operators.completable.CompletableUtils;
 import io.reactivex.internal.operators.flowable.FlowableUtils;
 import io.reactivex.internal.operators.maybe.MaybeUtils;
 import io.reactivex.internal.operators.observable.ObervableUtils;
-import io.reactivex.internal.operators.single.SingleUtils;
 
 @SuppressWarnings("rawtypes")
 @Weave
@@ -303,7 +303,7 @@ public abstract class RxJavaPlugins {
 			single.singleName = NewRelic.getAgent().getTracedMethod().getMetricName();
 		}
 
-		return single;
+		return new NRSingleWrapper<T>(single);
 	}
 
 	public static Completable onAssembly(Completable source) {

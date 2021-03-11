@@ -10,4 +10,5 @@ public abstract class Single<T> {
 	@NewField
 	public String singleName = null;
 	
+	 protected abstract void subscribeActual(SingleObserver<? super T> observer);
 }
