@@ -2,6 +2,7 @@ package com.newrelic.instrumentation.rxjava2;
 
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 
@@ -15,6 +16,8 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 	private Disposable upstream;
 	
 	public Token token = null;
+	public Segment segment = null;
+	
 	private static boolean isTransformed = false;
 
 	public NRMaybeObserver(MaybeObserver<T> downstream) {
@@ -28,6 +31,10 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 	@Override
 	public void dispose() {
 		upstream.dispose();
+		if(segment != null) {
+			segment.ignore();
+			segment = null;
+		}
 	}
 
 	@Override
@@ -55,6 +62,10 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 			token.linkAndExpire();
 			token = null;
 		}
+		if(segment != null) {
+			segment.end();
+			segment = null;
+		}
 		downstream.onSuccess(t);
 	}
 
@@ -65,6 +76,10 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 			token.linkAndExpire();
 			token = null;
 		}
+		if(segment != null) {
+			segment.end();
+			segment = null;
+		}
 		downstream.onError(e);
 	}
 
@@ -74,6 +89,10 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 		if(token != null) {
 			token.linkAndExpire();
 			token = null;
+		}
+		if(segment != null) {
+			segment.end();
+			segment = null;
 		}
 		downstream.onComplete();
 	}

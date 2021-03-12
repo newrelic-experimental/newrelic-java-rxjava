@@ -6,6 +6,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public class Utils {
 
 	public static boolean initialized = false;
+	public static boolean USE_SEGMENTS = true;
 
 
 	public static void init() {
