@@ -1,6 +1,7 @@
 package com.newrelic.instrumentation.rxjava2;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 
@@ -14,6 +15,8 @@ public class NRCompletableObserver implements CompletableObserver, Disposable {
 	private Disposable upstream;
 	
 	public Token token = null;
+	public Segment segment = null;
+	
 	private static boolean isTransformed = false;
 
 	public NRCompletableObserver(CompletableObserver downstream) {
@@ -27,6 +30,10 @@ public class NRCompletableObserver implements CompletableObserver, Disposable {
 	@Override
 	public void dispose() {
 		upstream.dispose();
+		if(segment != null) {
+			segment.ignore();
+			segment = null;
+		}
 	}
 
 	@Override
@@ -51,6 +58,10 @@ public class NRCompletableObserver implements CompletableObserver, Disposable {
 			token.linkAndExpire();
 			token = null;
 		}
+		if(segment != null) {
+			segment.end();
+			segment = null;
+		}
 		downstream.onComplete();
 	}
 
@@ -60,6 +71,10 @@ public class NRCompletableObserver implements CompletableObserver, Disposable {
 		if(token != null) {
 			token.linkAndExpire();
 			token = null;
+		}
+		if(segment != null) {
+			segment.end();
+			segment = null;
 		}
 		downstream.onError(e);
 	}

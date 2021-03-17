@@ -2,6 +2,7 @@ package com.newrelic.instrumentation.rxjava2;
 
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 
@@ -17,6 +18,8 @@ public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
 	private static boolean isTransformed = false;
 	
 	public Token token = null;
+	
+	public Segment segment = null;
 
 	public NRSingleObserver(SingleObserver<T> downstream) {
 		this.downstream = downstream;
@@ -28,6 +31,10 @@ public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
 
 	@Override
 	public void dispose() {
+		if(segment != null) {
+			segment.ignore();
+			segment = null;
+		}
 		upstream.dispose();
 	}
 
@@ -53,6 +60,9 @@ public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
 			token.linkAndExpire();
 			token = null;
 		}
+		if(segment != null) {
+			segment.end();
+		}
 		downstream.onSuccess(t);
 	}
 
@@ -63,6 +73,9 @@ public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
 		if(token != null) {
 			token.linkAndExpire();
 			token = null;
+		}
+		if(segment != null) {
+			segment.end();
 		}
 		downstream.onError(e);
 	}
