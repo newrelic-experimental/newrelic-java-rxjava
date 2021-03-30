@@ -4,6 +4,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 
@@ -14,6 +15,8 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 	
 	Subscription upstream;
 	public Token token = null;
+	public Segment segment = null;
+	
 	private static boolean isTransformed = false;
 	
 	public NRFlowableObserver(Subscriber<? super T> s) {
@@ -41,6 +44,10 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 			token.linkAndExpire();
 			token = null;
 		}
+		if(segment != null) {
+			segment.end();
+			segment = null;
+		}
 		downstream.onError(t);
 	}
 
@@ -50,6 +57,10 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 		if(token != null) {
 			token.linkAndExpire();
 			token = null;
+		}
+		if(segment != null) {
+			segment.end();
+			segment = null;
 		}
 		downstream.onComplete();
 	}
@@ -62,6 +73,14 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 	@Override
 	public void cancel() {
 		upstream.cancel();
+		if(segment != null) {
+			segment.ignore();
+			segment = null;
+		}
+		if(token != null) {
+			token.expire();
+			token = null;
+		}
 	}
 
 	@Override
