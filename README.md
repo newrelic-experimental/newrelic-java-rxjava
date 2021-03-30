@@ -2,7 +2,7 @@
 
 # New Relic Java Instrumentation for RxJava 
 
-Instrumentation for the RxJava Framework.  There are two sets of instrumentation, one for RxJava1 and the other for RxJava2.
+Instrumentation for the RxJava Framework (https://github.com/ReactiveX/RxJava).  There are two sets of instrumentation, one for RxJava1 and the other for RxJava2.
 
 ## Installation
 
