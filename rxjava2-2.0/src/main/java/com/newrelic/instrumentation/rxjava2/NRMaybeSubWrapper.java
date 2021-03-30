@@ -2,7 +2,6 @@ package com.newrelic.instrumentation.rxjava2;
 
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
-import io.reactivex.Observer;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.operators.maybe.MaybeUtils;
 

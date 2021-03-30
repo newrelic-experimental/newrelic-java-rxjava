@@ -15,7 +15,7 @@ public abstract class ObservableIntervalRange<T> extends Observable<T> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void subscribeActual(Observer<? super T> observer) {
-		if (Utils.USE_SEGMENTS) {
+		if (Utils.useSegments) {
 			NRObservableObserver<? super T> wrapper = new NRObservableObserver(observer);
 			String name = "Observable/" + observableName != null ? observableName : "ObservableIntervalRange";
 			Segment segment = NewRelic.getAgent().getTransaction().startSegment(name);

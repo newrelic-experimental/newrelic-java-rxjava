@@ -15,7 +15,7 @@ public class MaybeErrorCallable<T> extends Maybe<T> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void subscribeActual(MaybeObserver<? super T> observer) {
-		if(Utils.USE_SEGMENTS) {
+		if(Utils.useSegments) {
 			NRMaybeObserver<? super T> wrapper = new NRMaybeObserver(observer);
 			String name = "Maybe/" + maybeName != null ? maybeName : getClass().getSimpleName();
 			Segment segment = NewRelic.getAgent().getTransaction().startSegment(name);

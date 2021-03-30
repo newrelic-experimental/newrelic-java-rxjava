@@ -15,7 +15,7 @@ public class SingleDefer<T> extends Single<T> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void subscribeActual(SingleObserver<? super T> s) {
-		if (Utils.USE_SEGMENTS) {
+		if (Utils.useSegments) {
 			NRSingleObserver<? super T> wrapper = new NRSingleObserver(s);
 			String name = "Single/" + singleName != null ? singleName : "SingleDefer";
 			Segment segment = NewRelic.getAgent().getTransaction().startSegment(name);

@@ -16,7 +16,7 @@ public class FlowableFromCallable<T> extends Flowable<T> {
 
 	
 	public void subscribeActual(Subscriber<? super T> t) {
-		if(Utils.USE_SEGMENTS) {
+		if(Utils.useSegments) {
 			NRFlowableObserver<? super T> wrapper = new NRFlowableObserver<T>(t);
 			String name = "Flowable/" + flowableName != null ? flowableName : getClass().getSimpleName();
 			Segment segment = NewRelic.getAgent().getTransaction().startSegment(name);

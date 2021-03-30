@@ -14,7 +14,7 @@ import io.reactivex.CompletableObserver;
 public class CompletableCreate extends Completable {
 
 	protected void subscribeActual(CompletableObserver s) {
-		if(Utils.USE_SEGMENTS) {
+		if(Utils.useSegments) {
 			NRCompletableObserver wrapper = new NRCompletableObserver(s);
 			String name = "Completable/" + completableName != null ? completableName : getClass().getSimpleName();
 			Segment segment = NewRelic.getAgent().getTransaction().startSegment(name);

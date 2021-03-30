@@ -15,7 +15,7 @@ public abstract class MaybeEmpty<T> extends Maybe<T> {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void subscribeActual(MaybeObserver<? super T> observer) {
-		if(Utils.USE_SEGMENTS) {
+		if(Utils.useSegments) {
 			NRMaybeObserver<? super T> wrapper = new NRMaybeObserver(observer);
 			String name = "Maybe/" + maybeName != null ? maybeName : "MaybeDefer";
 			Segment segment = NewRelic.getAgent().getTransaction().startSegment(name);
