@@ -5,8 +5,10 @@ import com.newrelic.api.agent.weaver.NewField;
 import com.newrelic.api.agent.weaver.Weave;
 
 @Weave(type=MatchType.BaseClass)
-public class Single<T> {
+public abstract class Single<T> {
 
 	@NewField
 	public String singleName = null;
+	
+	protected abstract void subscribeActual(SingleObserver<? super T> observer);
 }
