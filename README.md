@@ -30,7 +30,8 @@ The RxJava2 instrumentation uses a New Relic Java Agent segment (https://docs.ne
 &nbsp;&nbsp;\# Used to toggle the use of segments in RxJava2 objects  
 &nbsp;&nbsp;RxJava2:   
 &nbsp;&nbsp;&nbsp;&nbsp;useSegments: false  
-
+### RxJava3
+Support for RxJava3 is the same as the RxJava2.  Requires different extension jars due to changes to package names
 ## Building
 Building the extension requires that Gradle is installed.
 To build the extension jars from source, follow these steps:
