@@ -23,7 +23,7 @@ The rxjava1-finder extension will find methods which return an RxJava1 object (C
 Tracks Completable, Flowable, Maybe, Observable and Single.  For objects with onNext, the method call will be linked back to the original transaction.   For all objects the link is expired and linked with the object completes or an error is recorded.
 The rxjava2-finder extension will find methods which return an RxJava1 object (Completable, Flowable, Maybe, Observable, Single) and include them in the transaction trace.  Methods in the io.reactivex package (and subpackages) are ignored.   
 #### RxJava2 Segments
-The RxJava2 instrumentation uses a New Relic Java Agent segment to track the time from when the object is subscribed to until the object is completed or throws an error.   This feature is turned on by default.  To turn this feature off:
+The RxJava2 instrumentation uses a New Relic Java Agent segment (https://docs.newrelic.com/docs/agents/java-agent/async-instrumentation/java-agent-api-asynchronous-applications/#segments) to track the time from when the object is subscribed to until the object is completed or throws an error.   This feature is turned on by default.  To turn this feature off:
 1. Edit newrelic.yml
 2. Insert the following text into the file.  It can be placed anywhere in the file but the preferred place is right before the **labels:** stanza.  Please note that spaces matter so first two lines has two space at the beginning and the third has four spaces.    
      
