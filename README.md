@@ -2,40 +2,43 @@
 
 # New Relic Java Instrumentation for RxJava 
 
->[Brief description - what is the project and value does it provide? How often should users expect to get releases? How is versioning set up? Where does this project want to go?]
+Instrumentation for the RxJava Framework.  There are two sets of instrumentation, one for RxJava1 and the other for RxJava2.
 
 ## Installation
 
-> [Include a step-by-step procedure on how to get your code installed. Be sure to include any third-party dependencies that need to be installed separately]
+To install:   
+1. Download the latest release jar files.    
+2. In the New Relic Java directory (the one containing newrelic.jar), create a directory named extensions if it does not already exist.   
+3. Copy the downloaded jars into the extensions directory.   
+4. Restart the application.   
 
 ## Getting Started
 
->[Simple steps to start working with the software similar to a "Hello World"]
+Once installed the instrumentation will start to track RxJava objects.  
 
-## Usage
-
->[**Optional** - Include more thorough instructions on how to use the software. This section might not be needed if the Getting Started section is enough. Remove this section if it's not needed.]
-
+### RxJava1
+Tracks Observable, Completable and Single.  For an Observable, it will link the onNext back to the original transaction and complete and link on either the onError or onCompleted and expire the token.   For a Completable or Single, it will link back to the original transaction on the onError or onCompleted and expired the token. 
+The rxjava1-finder extension will find methods which return an RxJava1 object (Completable, Observable, Single) and include them in the transaction trace.  Methods in the rx package (and subpackages) are ignored.
+### RxJava2
+Tracks Completable, Flowable, Maybe, Observable and Single.  For objects with onNext, the method call will be linked back to the original transaction.   For all objects the link is expired and linked with the object completes or an error is recorded.
+The rxjava2-finder extension will find methods which return an RxJava1 object (Completable, Flowable, Maybe, Observable, Single) and include them in the transaction trace.  Methods in the io.reactivex package (and subpackages) are ignored.
 ## Building
-
->[**Optional** - Include this section if users will need to follow specific instructions to build the software from source. Be sure to include any third party build dependencies that need to be installed separately. Remove this section if it's not needed.]
-
-## Testing
-
->[**Optional** - Include instructions on how to run tests if we include tests with the codebase. Remove this section if it's not needed.]
-
+Building the extension requires that Gradle is installed.
+To build the extension jars from source, follow these steps:
+### Build single extension
+To build a single extension with name *extension*, do the following:
+1. Set an environment variable *NEW_RELIC_EXTENSIONS_DIR* and set its value to the directory where you want the jar file built.
+2. Run the command: gradlew *extension*:clean *extension*:install
+### Build all extensions
+To build all extensions, do the following:
+1. Set an environment variable *NEW_RELIC_EXTENSIONS_DIR* and set its value to the directory where you want the jar file built.
+2. Run the command: gradlew clean install
 ## Support
 
 New Relic has open-sourced this project. This project is provided AS-IS WITHOUT WARRANTY OR DEDICATED SUPPORT. Issues and contributions should be reported to the project here on GitHub.
 
->[Choose 1 of the 2 options below for Support details, and remove the other one.]
+We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
 
->[Option 1 - no specific thread in Community]
->We encourage you to bring your experiences and questions to the [Explorers Hub](https://discuss.newrelic.com) where our community members collaborate on solutions and new ideas.
-
->[Option 2 - thread in Community]
->New Relic hosts and moderates an online forum where customers can interact with New Relic employees as well as other customers to get help and share best practices. Like all official New Relic open source projects, there's a related Community topic in the New Relic Explorers Hub.
->You can find this project's topic/threads here: [URL for Community thread]
 
 ## Contributing
 
