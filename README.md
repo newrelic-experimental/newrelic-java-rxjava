@@ -1,5 +1,20 @@
 [![New Relic Experimental header](https://github.com/newrelic/opensource-website/raw/master/src/images/categories/Experimental.png)](https://opensource.newrelic.com/oss-category/#new-relic-experimental)
+   
+![GitHub forks](https://img.shields.io/github/forks/newrelic-experimental/newrelic-java-rxjava?style=social)
+![GitHub stars](https://img.shields.io/github/stars/newrelic-experimental/newrelic-java-rxjava?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/newrelic-experimental/newrelic-java-rxjava?style=social)
 
+![GitHub all releases](https://img.shields.io/github/downloads/newrelic-experimental/newrelic-java-rxjava/total)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/newrelic-experimental/newrelic-java-rxjava)
+![GitHub last commit](https://img.shields.io/github/last-commit/newrelic-experimental/newrelic-java-rxjava)
+![GitHub Release Date](https://img.shields.io/github/release-date/newrelic-experimental/newrelic-java-rxjava)
+
+
+![GitHub issues](https://img.shields.io/github/issues/newrelic-experimental/newrelic-java-rxjava)
+![GitHub issues closed](https://img.shields.io/github/issues-closed/newrelic-experimental/newrelic-java-rxjava)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/newrelic-experimental/newrelic-java-rxjava)
+![GitHub pull requests closed](https://img.shields.io/github/issues-pr-closed/newrelic-experimental/newrelic-java-rxjava) 
+    
 # New Relic Java Instrumentation for RxJava 
 
 Instrumentation for the RxJava Framework (https://github.com/ReactiveX/RxJava).  There are two sets of instrumentation, one for RxJava1 and the other for RxJava2.
