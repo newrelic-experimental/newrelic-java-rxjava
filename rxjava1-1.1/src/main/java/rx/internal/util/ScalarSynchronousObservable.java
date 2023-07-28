@@ -15,7 +15,7 @@ public abstract class ScalarSynchronousObservable<T> {
 	public Observable<T> scalarScheduleOn(Scheduler scheduler) {
 		Observable<T> result = Weaver.callOriginal();
 
-		Operator<T,T> lifter = new NROperator<>();
+		Operator<T,T> lifter = new NROperator<T>();
 		return result.lift(lifter);
 	}
 }
