@@ -10,18 +10,18 @@ import rx.Observable.Operator;
 @Weave(originalName="rx.Observable",type=MatchType.BaseClass)
 public abstract class Observable_Instrumentation<T> {
 
-	
+
 	public Observable<T> observeOn(Scheduler scheduler) {
 		Observable<T> result = Weaver.callOriginal();
-		
-		Operator<T,T> lifter = new NROperator<T>();
+
+		Operator<T,T> lifter = new NROperator<>();
 		return result.lift(lifter);
 	}
-	
+
 	public Observable<T> subscribeOn(Scheduler scheduler) {
 		Observable<T> result = Weaver.callOriginal();
-		
-		Operator<T,T> lifter = new NROperator<T>();
+
+		Operator<T,T> lifter = new NROperator<>();
 		return result.lift(lifter);
 	}
 }

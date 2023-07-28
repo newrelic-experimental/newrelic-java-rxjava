@@ -3,21 +3,22 @@ package com.newrelic.instrumentation.rxjava2;
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.Transaction;
+import com.newrelic.api.agent.TransportType;
 
 import io.reactivex.MaybeObserver;
 import io.reactivex.disposables.Disposable;
 
 public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
-	
+
 	private MaybeObserver<T> downstream;
-	
+
 	private Disposable upstream;
-	
-	public Token token = null;
+
+	public NRRxJavaHeaders nrHeaders = null;
 	public Segment segment = null;
-	
+
 	private static boolean isTransformed = false;
 
 	public NRMaybeObserver(MaybeObserver<T> downstream) {
@@ -44,8 +45,9 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 
 	@Override
 	public void onSubscribe(Disposable d) {
-		if(token == null) {
-			token = NewRelic.getAgent().getTransaction().getToken();
+		if(nrHeaders == null) {
+			 nrHeaders = new NRRxJavaHeaders();
+			 NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(nrHeaders);
 		}
 		if(upstream != null) {
 			d.dispose();
@@ -56,11 +58,14 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onSuccess(T t) {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onSuccess");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();
@@ -70,11 +75,14 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onError(Throwable e) {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onError");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();
@@ -84,11 +92,14 @@ public class NRMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onComplete() {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onComplete");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();
