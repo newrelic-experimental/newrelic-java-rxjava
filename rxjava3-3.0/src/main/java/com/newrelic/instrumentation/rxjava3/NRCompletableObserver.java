@@ -1,22 +1,24 @@
 package com.newrelic.instrumentation.rxjava3;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.Transaction;
+import com.newrelic.api.agent.TransportType;
 
 import io.reactivex.rxjava3.core.CompletableObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 
 public class NRCompletableObserver implements CompletableObserver, Disposable {
-	
+
 	private CompletableObserver downstream;
-	
+
 	private Disposable upstream;
-	
-	public Token token = null;
+
+	public NRRxJavaHeaders nrHeaders = null;
 	public Segment segment = null;
-	
+
 	private static boolean isTransformed = false;
 
 	public NRCompletableObserver(CompletableObserver downstream) {
@@ -52,11 +54,14 @@ public class NRCompletableObserver implements CompletableObserver, Disposable {
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onComplete() {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava3","onComplete");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();
@@ -66,11 +71,14 @@ public class NRCompletableObserver implements CompletableObserver, Disposable {
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onError(Throwable e) {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava3","onError");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();

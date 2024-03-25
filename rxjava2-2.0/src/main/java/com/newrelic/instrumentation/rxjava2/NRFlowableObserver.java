@@ -4,9 +4,12 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.Transaction;
+import com.newrelic.api.agent.TransportType;
 
 
 public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
@@ -14,7 +17,7 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 	private Subscriber<? super T> downstream;
 	
 	Subscription upstream;
-	public Token token = null;
+	public NRRxJavaHeaders nrHeaders = null;
 	public Segment segment = null;
 	
 	private static boolean isTransformed = false;
@@ -29,20 +32,27 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 	
 	
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onNext(T t) {
-		if(token != null) {
-			token.link();
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onNext");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		downstream.onNext(t);
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onError(Throwable t) {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onError");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();
@@ -52,11 +62,14 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onComplete() {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onComplete");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();
@@ -77,9 +90,12 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 			segment.ignore();
 			segment = null;
 		}
-		if(token != null) {
-			token.expire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","cancel");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 	}
 

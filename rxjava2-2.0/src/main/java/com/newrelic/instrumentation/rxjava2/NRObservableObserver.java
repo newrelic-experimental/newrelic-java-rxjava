@@ -1,9 +1,11 @@
 package com.newrelic.instrumentation.rxjava2;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.Transaction;
+import com.newrelic.api.agent.TransportType;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -11,13 +13,13 @@ import io.reactivex.disposables.Disposable;
 public class NRObservableObserver<T> implements Observer<T>, Disposable {
 
 	private Observer<T> downstream;
-	
+
 	private Disposable upstream;
-	
-	public Token token = null;
-	
+
+	public NRRxJavaHeaders nrHeaders = null;
+
 	public Segment segment = null;
-	
+
 	private static boolean isTransformed = false;
 
 	public NRObservableObserver(Observer<T> downstream) {
@@ -54,11 +56,14 @@ public class NRObservableObserver<T> implements Observer<T>, Disposable {
 
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onError(Throwable e) {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onError");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();
@@ -68,20 +73,27 @@ public class NRObservableObserver<T> implements Observer<T>, Disposable {
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onNext(T t) {
-		if(token != null) {
-			token.link();
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onNext");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		downstream.onNext(t);
 	}
 
 	@Override
-	@Trace(async=true,excludeFromTransactionTrace=true)
+	@Trace(dispatcher=true,excludeFromTransactionTrace=true)
 	public void onComplete() {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava2","onComplete");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		if(segment != null) {
 			segment.end();

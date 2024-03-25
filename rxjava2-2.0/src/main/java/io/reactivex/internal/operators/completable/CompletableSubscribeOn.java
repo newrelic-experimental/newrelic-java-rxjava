@@ -6,6 +6,7 @@ import com.newrelic.api.agent.weaver.NewField;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
 import com.newrelic.instrumentation.rxjava2.NRCompletableObserver;
+import com.newrelic.instrumentation.rxjava2.NRRxJavaHeaders;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.CompletableSource;
@@ -15,34 +16,23 @@ import io.reactivex.Scheduler;
 public abstract class CompletableSubscribeOn {
 	
 	@NewField
-	private Token token = null;
+	private NRRxJavaHeaders nrHeaders = null;
 	
 	public CompletableSubscribeOn(CompletableSource source, Scheduler scheduler) {
-		if(token == null) {
-			Token t = NewRelic.getAgent().getTransaction().getToken();
-			if(t != null && t.isActive()) {
-				token = t;
-			} else if(t != null) {
-				t.expire();
-				t = null;
+		if(nrHeaders == null) {
+			 nrHeaders = new NRRxJavaHeaders();
+			 NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(nrHeaders);
 			}
-		}
 	}
 
 	protected void subscribeActual(CompletableObserver s) {
 		NRCompletableObserver wrapper = new NRCompletableObserver(s);
 		
-		Token t =  token != null ? token : NewRelic.getAgent().getTransaction().getToken();
-		if(t != null) {
-			if(t.isActive()) {
-				wrapper.token = t;
-			} else {
-				t.expire();
-				t = null;
+		if(nrHeaders == null) {
+			 nrHeaders = new NRRxJavaHeaders();
+			 NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(nrHeaders);
 			}
-		}
 		s = wrapper;
-		token = null;
 		Weaver.callOriginal();
 	}
 }
