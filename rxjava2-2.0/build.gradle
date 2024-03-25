@@ -13,7 +13,11 @@ dependencies {
    implementation 'com.newrelic.agent.java:newrelic-api:6.4.0'
    implementation fileTree(include: ['*.jar'], dir: '../libs')
    
-    testImplementation 'junit:junit:4.12' 
+   testImplementation 'junit:junit:4.12' 
+   testImplementation 'com.newrelic.agent.java:newrelic-agent:6.4.0'
+   testImplementation 'com.newrelic.agent.java:newrelic-api:6.4.0'
+   testImplementation fileTree(include: ['*.jar'], dir: '../libs')
+   testImplementation fileTree(include: ['*.jar'], dir: '../test-lib')
    
 }
 

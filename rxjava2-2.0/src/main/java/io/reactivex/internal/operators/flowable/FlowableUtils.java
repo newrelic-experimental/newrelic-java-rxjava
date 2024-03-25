@@ -10,6 +10,10 @@ public class FlowableUtils {
 			return true;
 		}
 		
+		if(flowable instanceof FlowableZip) {
+			return true;
+		}
+		
 		return false;
 	}
 }

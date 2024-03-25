@@ -35,6 +35,9 @@ public class NRSingleObserver2<T> implements SingleObserver<T> {
 		downstream.onSubscribe(d);
 	}
 
+	public String getName() {
+		return name;
+	}
 
 	@Override
 	public void onError(Throwable e) {
