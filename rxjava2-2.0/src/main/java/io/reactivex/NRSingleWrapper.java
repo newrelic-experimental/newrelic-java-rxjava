@@ -4,8 +4,6 @@ import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Trace;
 
-import io.reactivex.SingleObserver;
-
 public class NRSingleWrapper<T> extends Single<T> {
 	
 	private Single<T> delegate = null;
