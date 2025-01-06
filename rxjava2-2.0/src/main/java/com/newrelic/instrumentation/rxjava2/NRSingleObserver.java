@@ -1,5 +1,7 @@
 package com.newrelic.instrumentation.rxjava2;
 
+import java.util.logging.Level;
+
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
@@ -9,7 +11,7 @@ import com.newrelic.api.agent.Trace;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 
-public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
+public class NRSingleObserver<T> implements SingleObserver<T>, Disposable, NRObserver {
 
 	private SingleObserver<T> downstream;
 
@@ -22,6 +24,7 @@ public class NRSingleObserver<T> implements SingleObserver<T>, Disposable {
 	public Segment segment = null;
 
 	public NRSingleObserver(SingleObserver<T> downstream) {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Constructed NRFlowableObserver.<init> with subscriber {0}",downstream);
 		this.downstream = downstream;
 		if(!isTransformed) {
 			isTransformed = true;

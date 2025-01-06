@@ -1,5 +1,7 @@
 package com.newrelic.instrumentation.rxjava2;
 
+import java.util.logging.Level;
+
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
@@ -19,6 +21,7 @@ public class NRFlowableObserver2<T> implements Subscriber<T> {
 	public NRFlowableObserver2(Subscriber<? super T> downstream, String n) {
 		this.downstream = downstream;
 		name = n;
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Constructed NRFlowableObserver2.<init> with subscriber {0} and name {1}",this.downstream, name);
 		if(!isTransformed) {
 			isTransformed = true;
 			AgentBridge.instrumentation.retransformUninstrumentedClass(getClass());
@@ -27,32 +30,44 @@ public class NRFlowableObserver2<T> implements Subscriber<T> {
 
 	@Override
 	public void onSubscribe(Subscription s) {
-		segment = NewRelic.getAgent().getTransaction().startSegment(name != null ? "Flowable/"+name : "Flowable");
-		downstream.onSubscribe(s);
+		if(downstream != null) {
+			segment = NewRelic.getAgent().getTransaction().startSegment(name != null ? "Flowable/"+name : "Flowable");
+		}
+		if(downstream != null) {
+			downstream.onSubscribe(s);
+		}
 	}
 
 
 	@Override
 	public void onError(Throwable e) {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Call to NRFlowableObserver2.onError with subscriber {0}, name {1}",downstream,name);
 		if(segment != null) {
 			segment.end();
 			segment = null;
 		}
-		downstream.onError(e);
+		if (downstream != null) {
+			downstream.onError(e);
+		}
 	}
 
 	@Override
 	public void onComplete() {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Call to NRFlowableObserve2.onComplete with subscriber {0}, name {1}",downstream,name);
 		if(segment != null) {
 			segment.end();
 			segment = null;
 		}
-		downstream.onComplete();
+		if (downstream != null) {
+			downstream.onComplete();
+		}
 	}
 
 	@Override
 	public void onNext(T t) {
-		downstream.onNext(t);
+		if (downstream != null) {
+			downstream.onNext(t);
+		}
 	}
 
 }

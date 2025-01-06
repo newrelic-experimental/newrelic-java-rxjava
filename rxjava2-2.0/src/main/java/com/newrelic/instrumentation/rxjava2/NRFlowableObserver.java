@@ -1,25 +1,29 @@
 package com.newrelic.instrumentation.rxjava2;
 
+import java.util.logging.Level;
+
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import com.newrelic.agent.bridge.AgentBridge;
+import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.Segment;
 import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
 
 
-public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
+public class NRFlowableObserver<T> implements Subscriber<T>, Subscription, NRObserver {
 
 	private Subscriber<? super T> downstream;
 	
 	Subscription upstream;
 	public Token token = null;
-	public Segment segment = null;
+	private Segment segment = null;
 	
 	private static boolean isTransformed = false;
 	
 	public NRFlowableObserver(Subscriber<? super T> s) {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Constructed NRFlowableObserver.<init> with subscriber {0}",s);
 		downstream = s;
 		if(!isTransformed) {
 			isTransformed = true;
@@ -27,6 +31,10 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 		}
 	}
 	
+	public void setSegment(Segment s) {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Call to NRFlowableObserver.setSegment with subscriber {0}, using segment {1}",downstream,s);
+		segment = s;
+	}
 	
 	@Override
 	@Trace(async=true,excludeFromTransactionTrace=true)
@@ -40,6 +48,7 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 	@Override
 	@Trace(async=true,excludeFromTransactionTrace=true)
 	public void onError(Throwable t) {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Call to NRFlowableObserver.onError with subscriber {0}",downstream);
 		if(token != null) {
 			token.linkAndExpire();
 			token = null;
@@ -54,11 +63,13 @@ public class NRFlowableObserver<T> implements Subscriber<T>, Subscription {
 	@Override
 	@Trace(async=true,excludeFromTransactionTrace=true)
 	public void onComplete() {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Call to NRFlowableObserver.onComplete with subscriber {0}",downstream);
 		if(token != null) {
 			token.linkAndExpire();
 			token = null;
 		}
 		if(segment != null) {
+			NewRelic.getAgent().getLogger().log(Level.FINE, "In NRFlowableObserver.onComplete ending segment {0}",segment);
 			segment.end();
 			segment = null;
 		}
