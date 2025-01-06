@@ -18,6 +18,7 @@ jar {
     attributes 'Implementation-Vendor': 'New Relic'
     attributes 'Implementation-Vendor-Id': 'com.newrelic'
     attributes 'Implementation-Version': 1.0
+    attributes 'Agent-Class': 'com.newrelic.agent.instrumentation.labs.rxjava1.RxJava1PreMain'
   }
 }
 
