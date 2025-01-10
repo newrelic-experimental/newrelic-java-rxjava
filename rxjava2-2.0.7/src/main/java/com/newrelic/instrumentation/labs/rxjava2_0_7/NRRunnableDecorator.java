@@ -6,9 +6,9 @@ import com.newrelic.api.agent.Token;
 import io.reactivex.functions.Function;
 
 public class NRRunnableDecorator implements Function<Runnable, Runnable> {
-	
+
 	private Function<Runnable,Runnable> delegate = null;
-	
+
 	public NRRunnableDecorator(Function<Runnable,Runnable> f) {
 		delegate = f;
 	}
@@ -24,7 +24,9 @@ public class NRRunnableDecorator implements Function<Runnable, Runnable> {
 				NRRunnable nrRun = new NRRunnable(r, t);
 				run = delegate != null ? delegate.apply(nrRun) : nrRun;
 			} else {
-				t.expire();
+				if(t != null) {
+					t.expire();
+				}
 				run = delegate != null ? delegate.apply(r) : r;
 			}
 		}

@@ -1,6 +1,7 @@
 package com.newrelic.instrumentation.labs.rxjava3;
 
 import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Token;
 
 import io.reactivex.rxjava3.functions.Function;
 
@@ -18,12 +19,15 @@ public class NRRunnableDecorator implements Function<Runnable, Runnable> {
 		if(r instanceof NRRunnable) {
 			run = delegate != null ? delegate.apply(r) : r;
 		} else {
-			 NRRxJavaHeaders hr = new NRRxJavaHeaders();
-			 NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(hr);
-
-			if(hr != null ) {
-				NRRunnable nrRun = new NRRunnable(r, hr);
+			Token t = NewRelic.getAgent().getTransaction().getToken();
+			if(t != null && t.isActive()) {
+				NRRunnable nrRun = new NRRunnable(r, t);
 				run = delegate != null ? delegate.apply(nrRun) : nrRun;
+			} else {
+				if(t != null) {
+					t.expire();
+				}
+				run = delegate != null ? delegate.apply(r) : r;
 			}
 		}
 		return run;

@@ -2,20 +2,18 @@ package com.newrelic.instrumentation.labs.rxjava2;
 
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
+import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
-import com.newrelic.api.agent.Transaction;
-import com.newrelic.api.agent.TransportType;
 
 
 public class NRRunnable implements Runnable {
 
-
-	public NRRxJavaHeaders nrHeaders = null;
+	private Token token = null;
 	private Runnable delegate = null;
 	private static boolean isTransformed = false;
 
-	public NRRunnable(Runnable r, NRRxJavaHeaders hr) {
-		nrHeaders = hr;
+	public NRRunnable(Runnable r, Token t) {
+		token = t;
 		delegate = r;
 		if(!isTransformed) {
 			AgentBridge.instrumentation.retransformUninstrumentedClass(getClass());
@@ -27,12 +25,9 @@ public class NRRunnable implements Runnable {
 	@Trace(dispatcher=true)
 	public void run() {
 		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","WrappedRunable", delegate != null ? delegate.getClass().getSimpleName() : "NullRunnable");
-
-		Transaction transaction = NewRelic.getAgent().getTransaction();
-		if (transaction != null) {
-			if (nrHeaders != null && !nrHeaders.isEmpty()) {
-				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
-			}
+		if(token != null) {
+			token.linkAndExpire();
+			token = null;
 		}
 		if(delegate != null) {
 			delegate.run();
