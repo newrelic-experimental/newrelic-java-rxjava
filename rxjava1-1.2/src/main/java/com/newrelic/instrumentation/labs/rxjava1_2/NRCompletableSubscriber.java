@@ -2,18 +2,19 @@ package com.newrelic.instrumentation.labs.rxjava1_2;
 
 import com.newrelic.agent.bridge.AgentBridge;
 import com.newrelic.api.agent.NewRelic;
-import com.newrelic.api.agent.Token;
 import com.newrelic.api.agent.Trace;
+import com.newrelic.api.agent.Transaction;
+import com.newrelic.api.agent.TransportType;
 
 import rx.CompletableSubscriber;
 import rx.Subscription;
 
 public class NRCompletableSubscriber implements CompletableSubscriber {
-	
+
 	private CompletableSubscriber actual = null;
-	Token token = null;
+	public NRRxJavaHeaders nrHeaders = null;
 	private static boolean isTransformed = false;
-	
+
 	public NRCompletableSubscriber(CompletableSubscriber s) {
 		actual = s;
 		if(!isTransformed) {
@@ -23,35 +24,37 @@ public class NRCompletableSubscriber implements CompletableSubscriber {
 	}
 
 	@Override
-	@Trace(async=true)
+	@Trace(dispatcher=true)
 	public void onCompleted() {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava1_2","onCompleted");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		actual.onCompleted();
 	}
 
 	@Override
-	@Trace(async=true)
+	@Trace(dispatcher=true)
 	public void onError(Throwable e) {
-		if(token != null) {
-			token.linkAndExpire();
-			token = null;
+		NewRelic.getAgent().getTracedMethod().setMetricName("Custom","RxJava1_2","onError");
+		Transaction transaction = NewRelic.getAgent().getTransaction();
+		if (transaction != null) {
+			if (nrHeaders != null && !nrHeaders.isEmpty()) {
+				transaction.acceptDistributedTraceHeaders(TransportType.Other, nrHeaders);
+			}
 		}
 		actual.onError(e);
 	}
 
 	@Override
 	public void onSubscribe(Subscription d) {
-		Token t = NewRelic.getAgent().getTransaction().getToken();
-		if(t != null) {
-			if(t.isActive()) {
-				token = t;
-			} else {
-				t.expire();
-				t = null;
-			}
+
+		if(nrHeaders == null) {
+			 nrHeaders = new NRRxJavaHeaders();
+			 NewRelic.getAgent().getTransaction().insertDistributedTraceHeaders(nrHeaders);
 		}
 		actual.onSubscribe(d);
 	}
