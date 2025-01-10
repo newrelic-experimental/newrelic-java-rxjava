@@ -2,7 +2,7 @@ package rx;
 
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.rxjava1_2.NRCompletableOperator;
+import com.newrelic.instrumentation.labs.rxjava1_2.NRCompletableOperator;
 
 import rx.Completable.Operator;
 

@@ -1,0 +1,30 @@
+
+// Build.gradle generated for instrumentation module rxjava2-2.0
+
+apply plugin: 'java'
+
+dependencies {
+   implementation 'io.reactivex.rxjava2:rxjava:2.0.7'
+   implementation 'org.reactivestreams:reactive-streams:1.0.3'
+   
+
+   // New Relic Java Agent dependencies
+   implementation fileTree(include: ['*.jar'], dir: '../libs')
+   
+    testImplementation 'junit:junit:4.12' 
+   
+}
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'com.newrelic.instrumentation.labs.rxjava2-2.0.7'
+    attributes 'Implementation-Vendor': 'New Relic Labs'
+    attributes 'Implementation-Vendor-Id': 'com.newrelic.labs'
+    attributes 'Implementation-Version': 1.0
+  }
+}
+
+verifyInstrumentation {
+   passes 'io.reactivex.rxjava2:rxjava:[2.0.7,)'
+   excludeRegex '.*RC[0-9]'
+}
