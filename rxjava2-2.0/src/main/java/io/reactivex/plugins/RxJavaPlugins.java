@@ -1,34 +1,36 @@
 package io.reactivex.plugins;
 
+import java.util.logging.Level;
+
 import org.reactivestreams.Subscriber;
 
 import com.newrelic.api.agent.NewRelic;
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.newrelic.instrumentation.rxjava2.NRCompletableSubWrapper;
-import com.newrelic.instrumentation.rxjava2.NRFlowableSubWrapper;
-import com.newrelic.instrumentation.rxjava2.NRMaybeSubWrapper;
-import com.newrelic.instrumentation.rxjava2.NRObservableSubWrapper;
-import com.newrelic.instrumentation.rxjava2.NRRunnableDecorator;
-import com.newrelic.instrumentation.rxjava2.NRSingleSubWrapper;
-import com.newrelic.instrumentation.rxjava2.Utils;
+import com.newrelic.instrumentation.labs.rxjava2.NRCompletableAssembly;
+import com.newrelic.instrumentation.labs.rxjava2.NRCompletableSubWrapper;
+import com.newrelic.instrumentation.labs.rxjava2.NRFlowableAssembly;
+import com.newrelic.instrumentation.labs.rxjava2.NRFlowableSubWrapper;
+import com.newrelic.instrumentation.labs.rxjava2.NRMaybeAssembly;
+import com.newrelic.instrumentation.labs.rxjava2.NRMaybeSubWrapper;
+import com.newrelic.instrumentation.labs.rxjava2.NRObservableAssembly;
+import com.newrelic.instrumentation.labs.rxjava2.NRObservableSubWrapper;
+import com.newrelic.instrumentation.labs.rxjava2.NRRunnableDecorator;
+import com.newrelic.instrumentation.labs.rxjava2.NRSingleAssembly;
+import com.newrelic.instrumentation.labs.rxjava2.NRSingleSubWrapper;
+import com.newrelic.instrumentation.labs.rxjava2.Utils;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
-import io.reactivex.NRSingleWrapper;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.operators.completable.CompletableUtils;
-import io.reactivex.internal.operators.flowable.FlowableUtils;
-import io.reactivex.internal.operators.maybe.MaybeUtils;
-import io.reactivex.internal.operators.observable.ObervableUtils;
 
 @SuppressWarnings("rawtypes")
 @Weave
@@ -46,7 +48,17 @@ public abstract class RxJavaPlugins {
 	static volatile BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe = Weaver.callOriginal();
 
 	static volatile BiFunction<Maybe, MaybeObserver, MaybeObserver> onMaybeSubscribe = Weaver.callOriginal();
+
+	static volatile Function<Single, Single> onSingleAssembly = Weaver.callOriginal();
 	
+	static volatile Function<Flowable, Flowable> onFlowableAssembly = Weaver.callOriginal();
+	
+	static volatile Function<Completable, Completable> onCompletableAssembly = Weaver.callOriginal();
+	
+	static volatile Function<Maybe, Maybe> onMaybeAssembly = Weaver.callOriginal();
+	
+	static volatile Function<Observable, Observable> onObservableAssembly = Weaver.callOriginal();
+
 	public static boolean isLockdown() {
 		return Weaver.callOriginal();
 	}
@@ -82,13 +94,133 @@ public abstract class RxJavaPlugins {
 	public static BiFunction<Maybe, MaybeObserver, MaybeObserver> getOnMaybeSubscribe() {
 		return Weaver.callOriginal();
 	}
-	
+
 	public static BiFunction<Observable, Observer, Observer> getOnObservableSubscribe() {
 		return Weaver.callOriginal();
 	}
-	
+
 	public static BiFunction<Single, SingleObserver, SingleObserver> getOnSingleSubscribe() {
 		return Weaver.callOriginal();
+	}
+	
+	public static Function<Single, Single> getOnSingleAssembly() {
+		return Weaver.callOriginal();
+	}
+	
+	public static Function<Completable, Completable> getOnCompletableAssembly() {
+		return Weaver.callOriginal();
+	}
+	
+	public static Function<Flowable, Flowable> getOnFlowableAssembly() {
+		return Weaver.callOriginal();
+	}
+	
+	public static Function<Maybe, Maybe> getOnMaybeAssembly() {
+		return Weaver.callOriginal();
+	}
+	
+	public static Function<Observable, Observable> getOnObservableAssembly() {
+		return Weaver.callOriginal();
+	}
+	
+	public static void setOnObservableAssembly(Function<Observable, Observable> onObservableAssembly1) {
+		if(Utils.useSegments) {
+			if(onObservableAssembly != null) {
+				if(onObservableAssembly instanceof NRObservableAssembly) {
+					if(!(onObservableAssembly1 instanceof NRObservableAssembly)) {
+						NRObservableAssembly nrAssembly = (NRObservableAssembly)onObservableAssembly;
+						nrAssembly.setDelegate(nrAssembly);
+						onObservableAssembly1 = nrAssembly;
+					}
+				} else {
+					if(onObservableAssembly1 instanceof NRObservableAssembly) {
+						NRObservableAssembly nrAssembly = (NRObservableAssembly)onObservableAssembly1;
+						nrAssembly.setDelegate(onObservableAssembly);
+					}
+				}
+			}
+		}
+		Weaver.callOriginal();
+	}
+
+	public static void setOnSingleAssembly(Function<Single, Single> onSingleAssembly1) {
+		if(Utils.useSegments) {
+			if(onSingleAssembly != null) {
+				if(onSingleAssembly instanceof NRSingleAssembly) {
+					if(!(onSingleAssembly1 instanceof NRSingleAssembly)) {
+						NRSingleAssembly nrAssembly = (NRSingleAssembly)onSingleAssembly;
+						nrAssembly.setDelegate(onSingleAssembly1);
+						onSingleAssembly1 = nrAssembly;
+					}
+				} else {
+					if(onSingleAssembly1 instanceof NRSingleAssembly) {
+						NRSingleAssembly nrAssembly = (NRSingleAssembly)onSingleAssembly1;
+						nrAssembly.setDelegate(onSingleAssembly);
+					}
+				}
+			}
+		}
+		Weaver.callOriginal();
+	}
+	
+	public static void setOnMaybeAssembly(Function<Maybe, Maybe> onMaybeAssembly1) {
+		if(Utils.useSegments) {
+			if(onMaybeAssembly != null) {
+				if(onMaybeAssembly instanceof NRMaybeAssembly) {
+					if(!(onMaybeAssembly1 instanceof NRMaybeAssembly)) {
+						NRMaybeAssembly nrAssembly = (NRMaybeAssembly)onMaybeAssembly;
+						nrAssembly.setDelegate(onMaybeAssembly1);
+						onMaybeAssembly1 = nrAssembly;
+					}
+				} else {
+					if(onMaybeAssembly1 instanceof NRMaybeAssembly) {
+						NRMaybeAssembly nrAssembly = (NRMaybeAssembly)onMaybeAssembly1;
+						nrAssembly.setDelegate(onMaybeAssembly);
+					}
+				}
+			}
+		}
+		Weaver.callOriginal();
+	}
+	
+	public static void setOnCompletableAssembly(Function<Completable, Completable> onCompletableAssembly1) {
+		if(Utils.useSegments) {
+			if(onCompletableAssembly != null) {
+				if(onCompletableAssembly instanceof NRCompletableAssembly) {
+					if(!(onCompletableAssembly1 instanceof NRCompletableAssembly)) {
+						NRCompletableAssembly nrAssembly = (NRCompletableAssembly)onCompletableAssembly;
+						nrAssembly.setDelegate(onCompletableAssembly1);
+						onCompletableAssembly1 = nrAssembly;
+					}
+				} else {
+					if(onCompletableAssembly1 instanceof NRCompletableAssembly) {
+						NRCompletableAssembly nrAssembly = (NRCompletableAssembly)onCompletableAssembly1;
+						nrAssembly.setDelegate(onCompletableAssembly);
+					}
+				}
+			}
+		}
+		Weaver.callOriginal();
+	}
+	
+	public static void setOnFlowableAssembly(Function<Flowable, Flowable> onFlowableAssembly1) {
+		if(Utils.useSegments) {
+			if(onFlowableAssembly != null) {
+				if(onFlowableAssembly instanceof NRFlowableAssembly) {
+					if(!(onFlowableAssembly1 instanceof NRFlowableAssembly)) {
+						NRFlowableAssembly nrAssembly = (NRFlowableAssembly)onFlowableAssembly;
+						nrAssembly.setDelegate(onFlowableAssembly1);
+						onFlowableAssembly1 = nrAssembly;
+					}
+				} else {
+					if(onFlowableAssembly1 instanceof NRFlowableAssembly) {
+						NRFlowableAssembly nrAssembly = (NRFlowableAssembly)onFlowableAssembly1;
+						nrAssembly.setDelegate(onFlowableAssembly);
+					}
+				}
+			}
+		}
+		Weaver.callOriginal();
 	}
 	
 	public static void setOnMaybeSubscribe(BiFunction<Maybe, MaybeObserver, MaybeObserver> onMaybeSubscribe1) {
@@ -245,9 +377,11 @@ public abstract class RxJavaPlugins {
 	}
 
 	public static void setOnFlowableSubscribe(BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe1) {
+		NewRelic.getAgent().getLogger().log(Level.FINE, "Call to RxJavaPlugins.setOnFlowableSubscribe({0})", onFlowableSubscribe1);
 		if (Utils.useSegments) {
 			// only have to manipulate if there is an existing function set
 			if(onFlowableSubscribe != null) {
+				NewRelic.getAgent().getLogger().log(Level.FINE, "In RxJavaPlugins.setOnFlowableSubscribe, the value of onFlowableSubscribe has already been set to {0}", onFlowableSubscribe);
 				if(onFlowableSubscribe instanceof NRFlowableSubWrapper) {
 					NRFlowableSubWrapper nr2_1 = (NRFlowableSubWrapper)onFlowableSubscribe;
 					if(onFlowableSubscribe1 instanceof NRFlowableSubWrapper) {
@@ -273,8 +407,11 @@ public abstract class RxJavaPlugins {
 			} else {
 				// if not NR then wrap the incoming
 				if(!(onFlowableSubscribe1 instanceof NRFlowableSubWrapper)) {
+					NewRelic.getAgent().getLogger().log(Level.FINE, "In RxJavaPlugins.setOnFlowableSubscribe, the value of onFlowableSubscribe has not been set, wrapping with NNRFlowableSubWrapper, {0}", onFlowableSubscribe1);
 					NRFlowableSubWrapper nr = new NRFlowableSubWrapper(onFlowableSubscribe1);
 					onFlowableSubscribe1 = nr;
+				} else {
+					NewRelic.getAgent().getLogger().log(Level.FINE, "In RxJavaPlugins.setOnFlowableSubscribe, the value of onFlowableSubscribe has not been set and input is NRFlowableSubWrapper");
 				}
 
 			}
@@ -287,8 +424,8 @@ public abstract class RxJavaPlugins {
 			Utils.init();
 		}
 		Observable<T> observable = Weaver.callOriginal();
-		if(!ObervableUtils.ignore(observable) && observable.observableName == null) {
-			observable.observableName = NewRelic.getAgent().getTracedMethod().getMetricName();	 
+		if(observable.observableName == null) {
+			observable.observableName = source.getClass().getSimpleName();	 
 		}
 
 		return observable;
@@ -300,10 +437,10 @@ public abstract class RxJavaPlugins {
 		}
 		Single<T> single = Weaver.callOriginal();
 		if(single.singleName == null) {
-			single.singleName = NewRelic.getAgent().getTracedMethod().getMetricName();
+			single.singleName = source.singleName != null ? source.singleName : source.getClass().getName();
 		}
 
-		return new NRSingleWrapper<T>(single);
+		return single;
 	}
 
 	public static Completable onAssembly(Completable source) {
@@ -311,8 +448,8 @@ public abstract class RxJavaPlugins {
 			Utils.init();
 		}
 		Completable completable = Weaver.callOriginal();
-		if(!CompletableUtils.ignore(completable) && completable.completableName == null) {
-			completable.completableName = NewRelic.getAgent().getTracedMethod().getMetricName();
+		if(completable.completableName == null) {
+			completable.completableName = source.getClass().getSimpleName();
 		}
 
 		return completable;
@@ -323,8 +460,8 @@ public abstract class RxJavaPlugins {
 			Utils.init();
 		}
 		Flowable<T> flowable = Weaver.callOriginal();
-		if(!FlowableUtils.ignore(flowable) && flowable.flowableName == null) {
-			flowable.flowableName = NewRelic.getAgent().getTracedMethod().getMetricName();
+		if(flowable.flowableName == null) {
+			flowable.flowableName = source.flowableName != null ? source.flowableName : source.getClass().getSimpleName();
 		}
 		return flowable;
 	}
@@ -334,8 +471,8 @@ public abstract class RxJavaPlugins {
 			Utils.init();
 		}
 		Maybe<T> maybe = Weaver.callOriginal();
-		if(!MaybeUtils.ignore(maybe) && maybe.maybeName == null) {
-			maybe.maybeName = NewRelic.getAgent().getTracedMethod().getMetricName();
+		if(maybe.maybeName == null) {
+			maybe.maybeName = source.getClass().getSimpleName();
 		}
 
 		return maybe;

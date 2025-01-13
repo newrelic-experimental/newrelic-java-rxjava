@@ -2,7 +2,7 @@ package rx.internal.util;
 
 import com.newrelic.api.agent.weaver.Weave;
 import com.newrelic.api.agent.weaver.Weaver;
-import com.nr.rxjava1.NROperator;
+import com.newrelic.instrumentation.labs.rxjava1.NROperator;
 
 import rx.Observable;
 import rx.Observable.Operator;

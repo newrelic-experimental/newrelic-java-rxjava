@@ -12,8 +12,8 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
 @Weave(type=MatchType.BaseClass)
-public abstract class Observable<T> {
-
+public abstract class Observable<T> implements ObservableSource<T> {
+	
 	@NewField
 	public String observableName = null;
 
