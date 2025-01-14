@@ -17,7 +17,7 @@
     
 # New Relic Java Instrumentation for RxJava 
 
-Instrumentation for the RxJava Framework (https://github.com/ReactiveX/RxJava).  There are two sets of instrumentation, one for RxJava1 and the other for RxJava2.
+Instrumentation for the RxJava Framework (https://github.com/ReactiveX/RxJava).  There are three sets of instrumentation, one for RxJava1 one for RxJava2 and one for RxJava3.
 
 ## Installation
 
@@ -38,13 +38,22 @@ The rxjava1-finder extension will find methods which return an RxJava1 object (C
 Tracks Completable, Flowable, Maybe, Observable and Single.  For objects with onNext, the method call will be linked back to the original transaction.   For all objects the link is expired and linked with the object completes or an error is recorded.
 The rxjava2-finder extension will find methods which return an RxJava1 object (Completable, Flowable, Maybe, Observable, Single) and include them in the transaction trace.  Methods in the io.reactivex package (and subpackages) are ignored.   
 #### RxJava2 Segments
-The RxJava2 instrumentation uses a New Relic Java Agent segment (https://docs.newrelic.com/docs/agents/java-agent/async-instrumentation/java-agent-api-asynchronous-applications/#segments) to track the time from when the object is subscribed to until the object is completed or throws an error.   This feature is turned on by default.  To turn this feature off:
+The RxJava2 instrumentation uses a New Relic Java Agent segment (https://docs.newrelic.com/docs/agents/java-agent/async-instrumentation/java-agent-api-asynchronous-applications/#segments) to track the time from when the object is subscribed to until the object is completed or throws an error. It is reported as RxJava2/*rxType*/TotalTime/*rx Class simple name*   This feature is turned on by default.  Additional you can choose not to track certain RxJava Object by configuring a comma separated list of the simple class names that you wish to ignore.    
+    
+To turn this feature off:
 1. Edit newrelic.yml
 2. Insert the following text into the file.  It can be placed anywhere in the file but the preferred place is right before the **labels:** stanza.  Please note that spaces matter so first two lines has two space at the beginning and the third has four spaces.    
      
 &nbsp;&nbsp;\# Used to toggle the use of segments in RxJava2 objects  
 &nbsp;&nbsp;RxJava2:   
 &nbsp;&nbsp;&nbsp;&nbsp;useSegments: false  
+
+To ignore certain Rx objects add the rxType and simple class name to the above configuration.   For example to stop using segments to track with the name RxJava2/Flowable/TotalTime/FlowableFlatMap, use the following configuration:   
+&nbsp;&nbsp;RxJava2:   
+&nbsp;&nbsp;&nbsp;&nbsp;useSegments: true  
+&nbsp;&nbsp;&nbsp;&nbsp;Flowable:     
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignores: FlowableFlatMap   
+   
 ### RxJava3
 Support for RxJava3 is the same as the RxJava2.  Requires different extension jars due to changes to package names
 ## Building
