@@ -38,7 +38,7 @@ The rxjava1-finder extension will find methods which return an RxJava1 object (C
 Tracks Completable, Flowable, Maybe, Observable and Single.  For objects with onNext, the method call will be linked back to the original transaction.   For all objects the link is expired and linked with the object completes or an error is recorded.
 The rxjava2-finder extension will find methods which return an RxJava1 object (Completable, Flowable, Maybe, Observable, Single) and include them in the transaction trace.  Methods in the io.reactivex package (and subpackages) are ignored.   
 #### RxJava2 Segments
-The RxJava2 instrumentation uses a New Relic Java Agent segment (https://docs.newrelic.com/docs/agents/java-agent/async-instrumentation/java-agent-api-asynchronous-applications/#segments) to track the time from when the object is subscribed to until the object is completed or throws an error. It is reported as RxJava2/*rxType*/TotalTime/*rx Class simple name*   This feature is turned on by default.  Additional you can choose not to track certain RxJava Object by configuring a comma separated list of the simple class names that you wish to ignore.    
+The RxJava2 instrumentation uses a New Relic Java Agent segment (https://docs.newrelic.com/docs/agents/java-agent/async-instrumentation/java-agent-api-asynchronous-applications/#segments) to track the time from when the object is subscribed to until the object is completed or throws an error. It is reported as RxJava2/*rxType*/TotalTime/*rx Class simple name*   This feature is turned on by default.  Additional you can choose not to track certain RxJava Object by configuring a comma separated list of the simple class names that you wish to ignore.  Due to the logic used with the From methods (e.g. fromCallable) it is not possible to use segments to track from and hence they are not tracked via segments.      
     
 To turn this feature off:
 1. Edit newrelic.yml
@@ -55,7 +55,11 @@ To ignore certain Rx objects add the rxType and simple class name to the above c
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignores: FlowableFlatMap   
    
 ### RxJava3
-Support for RxJava3 is the same as the RxJava2.  Requires different extension jars due to changes to package names
+Support for RxJava3 is the same as the RxJava2.  Requires different extension jars due to changes to package names    
+
+### Finder Extensions   
+There are three finder extensions included with this instrumentation, one for each RxJava version.   The purpose of these extensions to to track methods outside of those in RxJava that return one of the RxJava objects.  This allows you to track your methods that return an RxJava object.   
+   
 ## Building
 Building the extension requires that Gradle is installed.
 To build the extension jars from source, follow these steps:
