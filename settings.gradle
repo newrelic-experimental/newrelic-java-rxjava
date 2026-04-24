@@ -1,4 +1,4 @@
-rootProject.name = 'java-instrumentation-template'
+rootProject.name = 'rxjava-instrumentation'
 include 'rxjava1-1.1'
 include 'rxjava1-1.2'
 include 'rxjava2-2.0'
