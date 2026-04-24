@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/rxjava1-1.1" />
+            <option value="$PROJECT_DIR$/rxjava1-1.2" />
+            <option value="$PROJECT_DIR$/rxjava1-finder" />
+            <option value="$PROJECT_DIR$/rxjava2-2.0" />
+            <option value="$PROJECT_DIR$/rxjava2-2.0.7" />
+            <option value="$PROJECT_DIR$/rxjava2-finder" />
+            <option value="$PROJECT_DIR$/rxjava3-3.0" />
+            <option value="$PROJECT_DIR$/rxjava3-finder" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
