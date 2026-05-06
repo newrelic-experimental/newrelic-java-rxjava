@@ -22,6 +22,9 @@ jar {
 }
 
 verifyInstrumentation {
-    File outputFile = file("build/verifier/passes.txt")
-    outputFile << "No verify is needed"
+    def outputFile = file("build/verifier/passes.txt")
+    if(!outputFile.parentFile.exists()) {
+        outputFile.parentFile.mkdirs()
+    }
+    outputFile.text = "No verify is needed"
 }
